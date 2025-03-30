@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import './App.css';
 
-// Supabase 클라이언트 초기화 - 실제 값으로 변경해야 합니다. 수정
+// Supabase 클라이언트 초기화 - 실제 값으로 변경해야 합니다. 
 // .env 파일에서 Supabase URL과 Anon Key를 가져옵니다.
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;

@@ -14,19 +14,31 @@ function RoomList({ supabase, onSelectRoom }) {
   });
 
   useEffect(() => {
-    if (!supabase) return;
+    console.log('📋 RoomList component mounted');
 
+    if (!supabase) {
+      console.error('❌ Supabase client is null in RoomList');
+      setError('Supabase가 초기화되지 않았습니다.');
+      setIsLoading(false);
+      return;
+    }
+
+    console.log('✅ Supabase client available, fetching rooms...');
     fetchRooms();
 
     // 실시간 구독
     const channel = supabase
       .channel('rooms')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'rooms' }, () => {
+        console.log('🔄 Realtime update detected, refetching rooms...');
         fetchRooms();
       })
       .subscribe();
 
-    return () => supabase.removeChannel(channel);
+    return () => {
+      console.log('🧹 RoomList cleanup - removing channel subscription');
+      supabase.removeChannel(channel);
+    };
   }, [supabase]);
 
   const fetchRooms = async () => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import RoomList from './components/RoomList';
 import StanceSelector from './components/StanceSelector';
@@ -24,10 +24,19 @@ const supabase = supabaseUrl && supabaseKey
   : null;
 
 function App() {
-  const [currentView, setCurrentView] = useState('room-list'); // 'room-list', 'stance-selector', 'debate-room'
+  const [currentView, setCurrentView] = useState('room-list');
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [userName, setUserName] = useState('');
   const [userStance, setUserStance] = useState('');
+
+  // 앱 시작 시 항상 홈으로 강제 리셋
+  useEffect(() => {
+    console.log('🏠 App initialized - Starting at home (room-list)');
+    setCurrentView('room-list');
+    setSelectedRoom(null);
+    setUserName('');
+    setUserStance('');
+  }, []);
 
   const handleSelectRoom = (room) => {
     setSelectedRoom(room);

@@ -29,9 +29,17 @@ function App() {
   const [userName, setUserName] = useState('');
   const [userStance, setUserStance] = useState('');
 
-  // 앱 시작 시 항상 홈으로 강제 리셋
+  // 앱 시작 시 항상 홈으로 강제 리셋 + URL도 강제로 / 로 변경
   useEffect(() => {
-    console.log('🏠 App initialized - Starting at home (room-list)');
+    console.log('🏠 App initialized - Checking URL...');
+
+    // URL이 / 가 아니면 강제로 /로 이동
+    if (window.location.pathname !== '/') {
+      console.log(`🔄 Current path: ${window.location.pathname} - Redirecting to home...`);
+      window.history.replaceState({}, '', '/');
+    }
+
+    console.log('✅ Starting at home (room-list)');
     setCurrentView('room-list');
     setSelectedRoom(null);
     setUserName('');

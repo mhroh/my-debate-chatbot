@@ -9,8 +9,14 @@ import './App.css';
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
+console.log('🔍 Environment Variables Check:');
+console.log('REACT_APP_SUPABASE_URL:', supabaseUrl ? '✅ Set' : '❌ Missing');
+console.log('REACT_APP_SUPABASE_ANON_KEY:', supabaseKey ? '✅ Set' : '❌ Missing');
+
 if (!supabaseUrl || !supabaseKey) {
-  console.error('Supabase 환경 변수가 설정되지 않았습니다. .env 파일을 확인하세요.');
+  console.error('❌ Supabase 환경 변수가 설정되지 않았습니다. .env 파일을 확인하세요.');
+} else {
+  console.log('✅ Supabase client initialized successfully');
 }
 
 const supabase = supabaseUrl && supabaseKey

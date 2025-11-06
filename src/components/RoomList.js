@@ -4,6 +4,8 @@ import './RoomList.css';
 function RoomList({ supabase, onSelectRoom }) {
   const [rooms, setRooms] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [newRoom, setNewRoom] = useState({
     title: '',
     topic: '',
@@ -28,16 +30,38 @@ function RoomList({ supabase, onSelectRoom }) {
   }, [supabase]);
 
   const fetchRooms = async () => {
-    if (!supabase) return;
+    if (!supabase) {
+      setIsLoading(false);
+      return;
+    }
 
-    const { data, error } = await supabase
-      .from('rooms')
-      .select('*, participants(count)')
-      .eq('is_active', true)
-      .order('created_at', { ascending: false });
+    try {
+      setIsLoading(true);
+      setError(null);
 
-    if (!error && data) {
-      setRooms(data);
+      console.log('📡 Fetching rooms from Supabase...');
+
+      // 단순하게 rooms만 가져오기 (participants 카운트 제거)
+      const { data, error } = await supabase
+        .from('rooms')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('❌ Error fetching rooms:', error);
+        setError(`토론방을 불러오는데 실패했습니다: ${error.message}`);
+        setRooms([]);
+      } else {
+        console.log('✅ Rooms fetched successfully:', data);
+        setRooms(data || []);
+      }
+    } catch (err) {
+      console.error('❌ Unexpected error:', err);
+      setError('예상치 못한 오류가 발생했습니다.');
+      setRooms([]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -123,35 +147,61 @@ function RoomList({ supabase, onSelectRoom }) {
         </div>
       )}
 
-      <div className="rooms-grid">
-        {rooms.map((room) => (
-          <div
-            key={room.id}
-            className="room-card"
-            onClick={() => onSelectRoom(room)}
-          >
-            <h3>{room.title}</h3>
-            <p className="room-topic">{room.topic}</p>
-            {room.description && (
-              <p className="room-description">{room.description}</p>
-            )}
-            <div className="room-footer">
-              <span className="bot-role">
-                🤖 {getBotRoleName(room.bot_role)}
-              </span>
-              <span className="participant-count">
-                👥 {room.participants?.[0]?.count || 0}명 참여중
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {rooms.length === 0 && (
-        <div className="empty-state">
-          <h3>아직 토론방이 없습니다</h3>
-          <p>첫 토론방을 만들어보세요!</p>
+      {error && (
+        <div className="error-message" style={{
+          backgroundColor: '#ffebee',
+          color: '#d32f2f',
+          padding: '15px',
+          borderRadius: '10px',
+          margin: '20px 0',
+          textAlign: 'center'
+        }}>
+          ❌ {error}
         </div>
+      )}
+
+      {isLoading ? (
+        <div className="loading-state" style={{
+          textAlign: 'center',
+          padding: '60px 20px',
+          color: '#666'
+        }}>
+          <div style={{
+            fontSize: '48px',
+            marginBottom: '20px'
+          }}>⏳</div>
+          <h3>토론방 불러오는 중...</h3>
+        </div>
+      ) : (
+        <>
+          <div className="rooms-grid">
+            {rooms.map((room) => (
+              <div
+                key={room.id}
+                className="room-card"
+                onClick={() => onSelectRoom(room)}
+              >
+                <h3>{room.title}</h3>
+                <p className="room-topic">{room.topic}</p>
+                {room.description && (
+                  <p className="room-description">{room.description}</p>
+                )}
+                <div className="room-footer">
+                  <span className="bot-role">
+                    🤖 {getBotRoleName(room.bot_role)}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {rooms.length === 0 && !error && (
+            <div className="empty-state">
+              <h3>아직 토론방이 없습니다</h3>
+              <p>첫 토론방을 만들어보세요!</p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

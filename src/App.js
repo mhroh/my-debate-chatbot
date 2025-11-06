@@ -80,8 +80,24 @@ function App() {
     );
   }
 
+  // 현재 뷰 로그
+  console.log('🖥️ Current view:', currentView);
+
   return (
     <div className="app">
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        background: 'rgba(0,0,0,0.8)',
+        color: 'white',
+        padding: '5px 10px',
+        fontSize: '12px',
+        zIndex: 9999
+      }}>
+        📍 View: {currentView} | v2.0
+      </div>
+
       {currentView === 'room-list' && (
         <RoomList
           supabase={supabase}

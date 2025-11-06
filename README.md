@@ -1,70 +1,139 @@
-# Getting Started with Create React App
+# 디베이트 챗봇
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+React와 Supabase를 활용한 실시간 토론 챗봇 애플리케이션입니다.
 
-## Available Scripts
+## 주요 기능
 
-In the project directory, you can run:
+- 실시간 메시지 송수신 (Supabase Realtime 사용)
+- 지능형 토론 봇 응답
+- 타임스탬프가 포함된 메시지 표시
+- 자동 스크롤
+- 반응형 디자인
+- 에러 바운더리를 통한 안정적인 에러 처리
 
-### `npm start`
+## 기술 스택
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Frontend**: React 19.1.0
+- **Backend**: Supabase (PostgreSQL + Realtime)
+- **스타일링**: CSS3
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 시작하기
 
-### `npm test`
+### 1. 환경 설정
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+프로젝트를 클론한 후, `.env` 파일을 생성하세요:
 
-### `npm run build`
+```bash
+cp .env.example .env
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+`.env` 파일을 열고 Supabase 자격 증명을 입력하세요:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+REACT_APP_SUPABASE_URL=your_supabase_project_url
+REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Supabase 자격 증명은 [Supabase 대시보드](https://app.supabase.com) > Project Settings > API에서 확인할 수 있습니다.
 
-### `npm run eject`
+### 2. 데이터베이스 설정
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Supabase 대시보드의 SQL Editor에서 다음 쿼리를 실행하여 테이블을 생성하세요:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```sql
+-- messages 테이블 생성
+CREATE TABLE messages (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  content TEXT NOT NULL,
+  user_id TEXT NOT NULL,
+  is_bot BOOLEAN DEFAULT false,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+-- created_at 기준으로 인덱스 생성 (성능 최적화)
+CREATE INDEX messages_created_at_idx ON messages(created_at DESC);
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+-- Realtime 활성화
+ALTER PUBLICATION supabase_realtime ADD TABLE messages;
+```
 
-## Learn More
+### 3. 의존성 설치 및 실행
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+# 의존성 설치
+npm install
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+# 개발 서버 시작
+npm start
+```
 
-### Code Splitting
+브라우저에서 [http://localhost:3000](http://localhost:3000)을 열어 애플리케이션을 확인하세요.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 프로젝트 구조
 
-### Analyzing the Bundle Size
+```
+my-debate-chatbot/
+├── src/
+│   ├── App.js              # 메인 애플리케이션 컴포넌트
+│   ├── App.css             # 애플리케이션 스타일
+│   ├── ErrorBoundary.js    # 에러 바운더리 컴포넌트
+│   ├── index.js            # 엔트리 포인트
+│   └── index.css           # 글로벌 스타일
+├── public/
+├── .env.example            # 환경 변수 템플릿
+├── package.json
+└── README.md
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 봇 응답 기능
 
-### Making a Progressive Web App
+봇은 다양한 토론 주제에 대해 응답합니다:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- **인사말**: "안녕하세요" 등의 인사에 응답
+- **주제 제안**: "주제", "토론" 등의 키워드에 토론 주제 제안
+- **찬반 의견**: 찬성/반대 의견에 대한 균형잡힌 반론 제시
+- **AI 관련 질문**: 인공지능 관련 토론 유도
+- **일반 응답**: 사용자의 주장에 대한 심화 질문
 
-### Advanced Configuration
+## 주요 개선사항
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+1. **실시간 구독**: Supabase Realtime을 통한 즉각적인 메시지 동기화
+2. **환경 변수 검증**: 앱 실행 전 필수 설정 확인
+3. **자동 스크롤**: 새 메시지 도착 시 자동으로 최하단 스크롤
+4. **타임스탬프**: 각 메시지에 시간 표시
+5. **에러 처리**: 에러 바운더리를 통한 안정적인 앱 운영
+6. **향상된 UI**: 그라디언트 배경과 개선된 메시지 스타일
 
-### Deployment
+## 스크립트
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```bash
+# 개발 서버 시작
+npm start
 
-### `npm run build` fails to minify
+# 프로덕션 빌드
+npm run build
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+# 테스트 실행
+npm test
+```
+
+## 문제 해결
+
+### Supabase 연결 오류
+
+- `.env` 파일이 올바르게 설정되었는지 확인하세요
+- Supabase 프로젝트가 활성화되어 있는지 확인하세요
+- API 키가 유효한지 확인하세요
+
+### Realtime이 작동하지 않는 경우
+
+- Supabase 대시보드에서 Database > Replication을 확인하세요
+- `messages` 테이블이 Realtime publication에 추가되었는지 확인하세요
+
+## 라이선스
+
+MIT
+
+## 기여
+
+이슈와 풀 리퀘스트를 환영합니다!

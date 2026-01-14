@@ -1,141 +1,126 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import RoomList from './components/RoomList';
+import StanceSelector from './components/StanceSelector';
+import DebateRoom from './components/DebateRoom';
 import './App.css';
 
-// Supabase 클라이언트 초기화 - 실제 값으로 변경해야 합니다. 
-// .env 파일에서 Supabase URL과 Anon Key를 가져옵니다.
+// 환경 변수 검증
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
+console.log('🔍 Environment Variables Check:');
+console.log('REACT_APP_SUPABASE_URL:', supabaseUrl ? '✅ Set' : '❌ Missing');
+console.log('REACT_APP_SUPABASE_ANON_KEY:', supabaseKey ? '✅ Set' : '❌ Missing');
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+if (!supabaseUrl || !supabaseKey) {
+  console.error('❌ Supabase 환경 변수가 설정되지 않았습니다. .env 파일을 확인하세요.');
+} else {
+  console.log('✅ Supabase client initialized successfully');
+}
+
+const supabase = supabaseUrl && supabaseKey
+  ? createClient(supabaseUrl, supabaseKey)
+  : null;
 
 function App() {
-  const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [currentView, setCurrentView] = useState('room-list');
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [userName, setUserName] = useState('');
+  const [userStance, setUserStance] = useState('');
 
+  // 앱 시작 시 항상 홈으로 강제 리셋 + URL도 강제로 / 로 변경
   useEffect(() => {
-    fetchMessages();
+    console.log('🏠 App initialized - Checking URL...');
+
+    // URL이 / 가 아니면 강제로 /로 이동
+    if (window.location.pathname !== '/') {
+      console.log(`🔄 Current path: ${window.location.pathname} - Redirecting to home...`);
+      window.history.replaceState({}, '', '/');
+    }
+
+    console.log('✅ Starting at home (room-list)');
+    setCurrentView('room-list');
+    setSelectedRoom(null);
+    setUserName('');
+    setUserStance('');
   }, []);
 
-  async function fetchMessages() {
-    try {
-      setIsLoading(true);
-      setError(null);
-      
-      // Supabase에서 messages 테이블이 있는지 확인하세요
-      const { data, error } = await supabase
-        .from('messages')
-        .select('*')
-        .order('created_at', { ascending: true });
-      
-      if (error) throw error;
-      
-      setMessages(data || []);
-    } catch (err) {
-      console.error('메시지 불러오기 오류:', err);
-      setError('메시지를 불러오는 데 실패했습니다. 테이블이 올바르게 설정되었는지 확인하세요.');
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSelectRoom = (room) => {
+    setSelectedRoom(room);
+    setCurrentView('stance-selector');
+  };
+
+  const handleJoinRoom = (name, stance) => {
+    setUserName(name);
+    setUserStance(stance);
+    setCurrentView('debate-room');
+  };
+
+  const handleLeaveRoom = () => {
+    setCurrentView('room-list');
+    setSelectedRoom(null);
+    setUserName('');
+    setUserStance('');
+  };
+
+  if (!supabase) {
+    return (
+      <div className="error-container">
+        <h1>⚠️ 설정 오류</h1>
+        <p>Supabase 환경 변수가 설정되지 않았습니다.</p>
+        <p>
+          <code>.env</code> 파일을 생성하고 다음 변수를 설정하세요:
+        </p>
+        <pre>
+          REACT_APP_SUPABASE_URL=your_supabase_url{'\n'}
+          REACT_APP_SUPABASE_ANON_KEY=your_supabase_key
+        </pre>
+      </div>
+    );
   }
 
-  async function handleSendMessage(e) {
-    e.preventDefault();
-    if (!newMessage.trim()) return;
-
-    try {
-      setIsLoading(true);
-      
-      const newMsg = {
-        content: newMessage,
-        user_id: 'user123', // 사용자 ID를 적절히 설정하세요
-        is_bot: false,
-        created_at: new Date().toISOString()
-      };
-
-      // 메시지 저장
-      const { error: insertError } = await supabase
-        .from('messages')
-        .insert([newMsg]);
-
-      if (insertError) throw insertError;
-      
-      setNewMessage('');
-      await fetchMessages();
-      
-      // 봇 응답 생성 (여기서는 간단한 에코 응답)
-      await generateBotResponse(newMessage);
-      
-    } catch (err) {
-      console.error('메시지 전송 오류:', err);
-      setError('메시지를 전송하는 데 실패했습니다.');
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  async function generateBotResponse(userMessage) {
-    try {
-      const botMessage = {
-        content: `당신의 메시지에 대한 응답: ${userMessage}`,
-        user_id: 'bot',
-        is_bot: true,
-        created_at: new Date().toISOString()
-      };
-
-      const { error } = await supabase
-        .from('messages')
-        .insert([botMessage]);
-
-      if (error) throw error;
-      
-      await fetchMessages();
-    } catch (err) {
-      console.error('봇 응답 생성 오류:', err);
-      setError('봇 응답을 생성하는 데 실패했습니다.');
-    }
-  }
+  // 현재 뷰 로그
+  console.log('🖥️ Current view:', currentView);
 
   return (
-    <div className="app-container">
-      <h1 className="app-title">디베이트 챗봇</h1>
-      
-      <div className="chat-container">
-        {error && <div className="error-message">{error}</div>}
-        
-        <div className="messages-container">
-          {isLoading && messages.length === 0 ? (
-            <div className="loading">메시지 불러오는 중...</div>
-          ) : messages.length > 0 ? (
-            messages.map((msg, index) => (
-              <div 
-                key={index} 
-                className={`message ${msg.is_bot ? 'bot-message' : 'user-message'}`}
-              >
-                <div className="message-content">{msg.content}</div>
-              </div>
-            ))
-          ) : (
-            <div className="empty-message">대화를 시작해보세요!</div>
-          )}
-        </div>
-        
-        <form className="message-input-form" onSubmit={handleSendMessage}>
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="메시지를 입력하세요..."
-            disabled={isLoading}
-          />
-          <button type="submit" disabled={isLoading || !newMessage.trim()}>
-            {isLoading ? '전송 중...' : '전송'}
-          </button>
-        </form>
+    <div className="app">
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        background: 'rgba(0,0,0,0.8)',
+        color: 'white',
+        padding: '5px 10px',
+        fontSize: '12px',
+        zIndex: 9999
+      }}>
+        📍 View: {currentView} | v2.0
       </div>
+
+      {currentView === 'room-list' && (
+        <RoomList
+          supabase={supabase}
+          onSelectRoom={handleSelectRoom}
+        />
+      )}
+
+      {currentView === 'stance-selector' && selectedRoom && (
+        <StanceSelector
+          room={selectedRoom}
+          onJoin={handleJoinRoom}
+        />
+      )}
+
+      {currentView === 'debate-room' && selectedRoom && (
+        <DebateRoom
+          supabase={supabase}
+          room={selectedRoom}
+          userName={userName}
+          stance={userStance}
+          onLeave={handleLeaveRoom}
+        />
+      )}
     </div>
   );
 }

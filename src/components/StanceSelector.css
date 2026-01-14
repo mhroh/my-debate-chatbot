@@ -1,0 +1,155 @@
+.stance-selector-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.stance-modal {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  width: 90%;
+  max-width: 700px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.stance-modal h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.stance-modal h3 {
+  text-align: center;
+  color: #667eea;
+  margin-bottom: 10px;
+}
+
+.topic-text {
+  text-align: center;
+  color: #666;
+  margin-bottom: 30px;
+  font-size: 16px;
+}
+
+.user-input-section {
+  margin-bottom: 30px;
+}
+
+.user-input-section label {
+  display: block;
+  margin-bottom: 10px;
+  color: #333;
+  font-weight: bold;
+}
+
+.user-input-section input {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 16px;
+  font-family: inherit;
+}
+
+.user-input-section input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.stance-selection-section label {
+  display: block;
+  margin-bottom: 15px;
+  color: #333;
+  font-weight: bold;
+  text-align: center;
+}
+
+.stance-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.stance-option {
+  background: #f5f5f5;
+  border: 3px solid transparent;
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.stance-option:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stance-option.selected {
+  border-color: #667eea;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.stance-option.agree.selected {
+  border-color: #4CAF50;
+}
+
+.stance-option.disagree.selected {
+  border-color: #F44336;
+}
+
+.stance-option.neutral.selected {
+  border-color: #FF9800;
+}
+
+.stance-icon {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.stance-label {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.stance-description {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.join-btn {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.join-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.join-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

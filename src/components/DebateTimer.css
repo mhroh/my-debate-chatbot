@@ -1,0 +1,93 @@
+.debate-timer {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 15px 20px;
+  border-radius: 10px;
+  margin: 15px;
+  color: white;
+}
+
+.timer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.phase-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.timer-display {
+  font-size: 28px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+}
+
+.timer-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.timer-btn {
+  flex: 1;
+  padding: 10px;
+  border: 2px solid white;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.timer-btn:hover:not(:disabled) {
+  background: white;
+  color: #667eea;
+}
+
+.timer-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.timer-btn.start {
+  background: rgba(76, 175, 80, 0.8);
+  border-color: #4CAF50;
+}
+
+.timer-btn.pause {
+  background: rgba(255, 152, 0, 0.8);
+  border-color: #FF9800;
+}
+
+.timer-btn.reset {
+  background: rgba(244, 67, 54, 0.8);
+  border-color: #F44336;
+}
+
+.quick-timers {
+  display: flex;
+  gap: 8px;
+}
+
+.quick-timers button {
+  flex: 1;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  color: white;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.quick-timers button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}

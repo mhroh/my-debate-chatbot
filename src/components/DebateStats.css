@@ -1,0 +1,83 @@
+.debate-stats {
+  padding: 20px;
+}
+
+.debate-stats h3 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 20px;
+  text-align: center;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.stance-bar {
+  display: flex;
+  height: 40px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+
+.stance-bar-agree {
+  background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.stance-bar-disagree {
+  background: linear-gradient(135deg, #F44336 0%, #EF5350 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.stance-percent {
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+  margin-top: 5px;
+}
+
+.keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.keyword-chip {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
